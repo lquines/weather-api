@@ -1,8 +1,13 @@
+/*jshint esversion: 6 */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const https = require("https");
 const app = express();
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 app.use(bodyParser.urlencoded({extended:true}));
 
 app.get("/", function(req, res) {
@@ -14,7 +19,7 @@ app.post("/", function(req, res) {
   console.log(req.body.cityName);
 
   const city = req.body.cityName;
-  const apiKey = "7033957c6badc82d9d3f2dbd3097b48f";
+  const apiKey = process.env.API_KEY;
   const unit = "metric";
   const url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" + unit + "&appid=" + apiKey;
 
@@ -35,11 +40,11 @@ app.post("/", function(req, res) {
       srDate.setTime(sunrise*1000);
       var date = srDate.toString();
 
-      res.write("<p>The current weather in " + city + " is " + desc + ".</p>")
+      res.write("<p>The current weather in " + city + " is " + desc + ".</p>");
       res.write("<h1>The temperature in " + city + " is " +
         temp + " deg celsius.</h1>");
       res.write("Sunrise is " + date);
-      res.write("<img src="+ imgURL + ">")
+      res.write("<img src="+ imgURL + ">");
       res.send();
     });
 
@@ -47,6 +52,9 @@ app.post("/", function(req, res) {
 
 });
 
-app.listen(3000, function() {
-  console.log("Server is running on port 3000.");
+console.log(process.env);
+
+port = process.env.PORT || 3000;
+app.listen(port, function() {
+  console.log("Server is running on port ", port);
 });
