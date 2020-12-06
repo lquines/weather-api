@@ -1,5 +1,5 @@
 /*jshint esversion: 6 */
-
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const https = require("https");
@@ -21,14 +21,19 @@ app.post("/", function(req, res) {
   const city = req.body.cityName;
   const apiKey = process.env.API_KEY;
   const unit = "metric";
+  // const proxyURL = "https://quicors.herokuapp.com/";
   const url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=" + unit + "&appid=" + apiKey;
 
+  // https.get(proxyURL + url, function(response){
   https.get(url, function(response){
 
     console.log(response.statusCode);
+    // console.log("response: ", response);
 
     response.on("data", function(data) {
+      console.log("data: ", data);
       const weatherData = JSON.parse(data);
+      console.log("weather data: ", weatherData);
       const sunrise = weatherData.sys.sunrise;
       const temp = weatherData.main.temp;
       const city = weatherData.name;
@@ -47,12 +52,10 @@ app.post("/", function(req, res) {
       res.write("<img src="+ imgURL + ">");
       res.send();
     });
-
   });
-
 });
 
-console.log(process.env);
+console.log("process.env: ", process.env);
 
 port = process.env.PORT || 3000;
 app.listen(port, function() {
